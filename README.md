@@ -2,7 +2,7 @@ Anki Vocab Tool is a powerful, streamlined utility designed to help Japanese lea
 
 However, in order for the tool and the tool itself to work the following conditions has to be met:
 
-1. AnkiVocab Extension Download: The AnkiVocab Tool Extension must be downloaded from the google store.
+1. AnkiVocab Extension Download: The AnkiVocab Tool Extension must be downloaded from the google extension store.
 
 2. Anki Must Be Running: The Anki desktop application must be open on your computer while using this tool.
 
