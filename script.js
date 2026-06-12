@@ -203,4 +203,3 @@ function generateAnkiFurigana(word, reading) {
   }
   return furigana.trim();
 }
-lucide.createIcons();
