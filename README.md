@@ -10,4 +10,4 @@ However, in order for the tool and the tool itself to work the following conditi
 
 4. Correct Configuration: After installing this extension, click the Settings gear icon in the popup. You must enter the exact names of your existing Anki Deck and Note Type (e.g., "Japanese" and "Basic"). If these names do not match your Anki collection exactly, the extension will be unable to add cards.
 
-Once all of those conditions are met, you can go ahead and visit the website where the tool is being used which is https://hatemjp.github.io/AnkiVocab/
+Once all of those conditions are met, you can go ahead and use the AnkiVocab tool which is on https://hatemjp.github.io/AnkiVocab/
