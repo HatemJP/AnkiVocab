@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Anki Vocab Tool",
+  "version": "1.0",
+  "description": "Anki vocabulary tool that allows anyone to fetch all data about a single word and then adding it to Anki easily.",
+  "action": {
+    "default_popup": "anki-vocab.html",
+    "default_title": "Anki Vocab Add-on"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://jisho.org/*",
+    "https://tatoeba.org/*",
+    "http://127.0.0.1:8765/*"
+  ]
+}
