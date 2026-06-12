@@ -1,8 +1,8 @@
-Anki Vocab Tool is a powerful, streamlined utility designed to help Japanese learners build their vocabulary decks faster than ever. By searching for a word, the tool instantly fetches all essential data—including Reading, Furigana, Meaning, Example Sentences, and Translations—allowing you to create perfectly formatted Anki cards in seconds.
+Anki Vocab Tool is a powerful, streamlined utility designed to help Japanese learners build their vocabulary decks faster than ever. By searching for a word, the tool instantly fetches all essential data—including Reading, Furigana, Meaning, Example Sentences, and Translations—allowing you to create perfectly formatted Anki cards in seconds...
 
 However, in order for the tool and the tool itself to work the following conditions has to be met:
 
-1. AnkiVocab Extension: The AnkiVocab Tool Extension must be downloaded from the google store.
+1. AnkiVocab Extension Download: The AnkiVocab Tool Extension must be downloaded from the google store.
 
 2. Anki Must Be Running: The Anki desktop application must be open on your computer while using this tool.
 
