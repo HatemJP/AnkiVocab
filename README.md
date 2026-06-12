@@ -6,8 +6,8 @@ However, in order for the tool and the tool itself to work the following conditi
 
 2. Anki Must Be Running: The Anki desktop application must be open on your computer while using this tool.
 
-3. AnkiConnect Installed: You must have the AnkiConnect add-on installed in your Anki application. Without this, the extension cannot communicate with your collection.
+3. AnkiConnect Installed: You must have the AnkiConnect add-on installed in your Anki application. Without this, the tool cannot communicate with your collection.
 
-4. Correct Configuration: After installing this extension, click the Settings gear icon in the popup. You must enter the exact names of your existing Anki Deck and Note Type (e.g., "Japanese" and "Basic"). If these names do not match your Anki collection exactly, the extension will be unable to add cards.
+4. Correct Configuration: Click the Settings gear icon in the popup. You must enter the exact names of your existing Anki Deck and Note Type (e.g., "Japanese" and "Basic"). If these names do not match your Anki collection exactly, the tool will be unable to add cards.
 
 Once all of those conditions are met, you can go ahead and use the AnkiVocab tool which is on https://hatemjp.github.io/AnkiVocab/
