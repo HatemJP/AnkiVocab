@@ -5,18 +5,16 @@ const saveSettings = document.getElementById("save-settings");
 const sentenceModal = document.getElementById("sentence-modal");
 
 let currentReadings = [];
+let currentCandidates = [];
 
 // --- Keyboard Navigation & Global Listeners ---
 document.addEventListener("keydown", (e) => {
-  // Close modals with ESC
   if (e.key === "Escape") {
     settingsModal.classList.add("hidden");
     sentenceModal.classList.add("hidden");
   }
 
-  // Trigger "Add to Anki" with Ctrl/Cmd + Enter
   if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-    // Only trigger if we aren't in a modal
     if (
       settingsModal.classList.contains("hidden") &&
       sentenceModal.classList.contains("hidden")
@@ -26,8 +24,30 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// --- Connection Monitoring ---
+// Poll every 5 seconds to update UI state if Anki is closed/opened
+setInterval(async () => {
+  if (!settingsModal.classList.contains("hidden")) {
+    const isConnected = await checkAnkiConnection();
+    if (!isConnected) {
+      saveSettings.disabled = true;
+      saveSettings.innerText = "Anki Disconnected";
+      saveSettings.classList.replace("bg-teal-600", "bg-gray-600");
+    } else if (saveSettings.disabled) {
+      // Re-enable if connection returns
+      refreshSettingsLists();
+    }
+  }
+}, 5000);
+
+async function checkAnkiConnection() {
+  const result = await fetchAnkiData("version", 1000);
+  return result !== null;
+}
+
 // --- Settings Logic ---
-settingsBtn.addEventListener("click", () => {
+settingsBtn.addEventListener("click", async () => {
+  await refreshSettingsLists();
   settingsModal.classList.remove("hidden");
 });
 
@@ -41,22 +61,75 @@ settingsModal.addEventListener("click", (e) => {
   }
 });
 
-function loadSettings() {
-  document.getElementById("deck-name").value =
-    localStorage.getItem("ankiDeck") || "";
-  document.getElementById("note-type").value =
-    localStorage.getItem("ankiModel") || "";
+async function refreshSettingsLists() {
+  const deckContainer = document.getElementById("deck-name").parentElement;
+  const modelContainer = document.getElementById("note-type").parentElement;
+  const saveBtn = document.getElementById("save-settings");
+
+  const deckSelect = await createFreshSelect(
+    "deck-name",
+    "deckNames",
+    "ankiDeck",
+    true,
+  );
+  const modelSelect = await createFreshSelect(
+    "note-type",
+    "modelNames",
+    "ankiModel",
+    false,
+  );
+
+  if (!deckSelect || !modelSelect) {
+    saveBtn.disabled = true;
+    saveBtn.innerText = "Anki Not Connected";
+    saveBtn.className =
+      "w-full py-3 rounded-xl bg-gray-600 cursor-not-allowed font-bold";
+  } else {
+    saveBtn.disabled = false;
+    saveBtn.innerText = "Save Settings";
+    saveBtn.className =
+      "w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-700 font-bold transition";
+
+    deckContainer.replaceChild(
+      deckSelect,
+      document.getElementById("deck-name"),
+    );
+    modelContainer.replaceChild(
+      modelSelect,
+      document.getElementById("note-type"),
+    );
+  }
+}
+
+async function createFreshSelect(id, action, storageKey, isDeck) {
+  const options = await fetchAnkiData(action, 1500);
+  if (options === null) return null;
+
+  const select = document.createElement("select");
+  select.id = id;
+  select.className =
+    "w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-1 focus:ring-teal-500";
+
+  const filtered = isDeck
+    ? options.filter((o) => o.toLowerCase() !== "default")
+    : options;
+  select.innerHTML = filtered
+    .map((o) => `<option value="${o}">${o}</option>`)
+    .join("");
+
+  const saved = localStorage.getItem(storageKey);
+  if (saved && filtered.includes(saved)) select.value = saved;
+
+  return select;
 }
 
 saveSettings.addEventListener("click", () => {
-  const deckName = document.getElementById("deck-name").value.trim();
-  const noteType = document.getElementById("note-type").value.trim();
+  const deckName = document.getElementById("deck-name").value;
+  const noteType = document.getElementById("note-type").value;
   localStorage.setItem("ankiDeck", deckName);
   localStorage.setItem("ankiModel", noteType);
   settingsModal.classList.add("hidden");
 });
-
-loadSettings();
 
 // --- Search Logic ---
 window.performSearch = function () {
@@ -66,9 +139,7 @@ window.performSearch = function () {
 document
   .getElementById("field-tango")
   .addEventListener("keypress", function (e) {
-    if (e.key === "Enter") {
-      fetchWordData();
-    }
+    if (e.key === "Enter") fetchWordData();
   });
 
 // --- Utility Functions ---
@@ -81,75 +152,29 @@ function toggleLoading(show, text = "読み込み中...") {
   document.getElementById("main-container").classList.toggle("hidden", show);
 }
 
-// --- Settings Logic ---
-async function fetchAnkiData(action) {
+// Optimized Fetch with Timeout
+async function fetchAnkiData(action, timeout = 2000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
   try {
     const res = await fetch("http://127.0.0.1:8765", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: action, version: 6 }),
+      signal: controller.signal,
     });
+    clearTimeout(id);
     const result = await res.json();
-    return result.result || [];
+    return result.result !== undefined ? result.result : [];
   } catch (e) {
-    console.error(`Failed to fetch ${action}`, e);
-    return [];
+    return null;
   }
 }
-
-async function convertInputsToSelects() {
-  const inputs = ["deck-name", "note-type"];
-  const actions = ["deckNames", "modelNames"];
-
-  for (let i = 0; i < inputs.length; i++) {
-    const oldEl = document.getElementById(inputs[i]);
-    if (oldEl.tagName === "INPUT") {
-      const select = document.createElement("select");
-      select.id = inputs[i];
-      select.className =
-        oldEl.className +
-        " focus:ring-1 focus:ring-teal-500 focus:outline-none";
-
-      // Fetch data
-      let options = await fetchAnkiData(actions[i]);
-
-      // --- NEW: Filter out 'Default' ---
-      if (i === 0) {
-        // Only for deck names
-        options = options.filter((opt) => opt.toLowerCase() !== "default");
-      }
-
-      select.innerHTML = options
-        .map((o) => `<option value="${o}">${o}</option>`)
-        .join("");
-
-      const saved = localStorage.getItem(i === 0 ? "ankiDeck" : "ankiModel");
-      if (saved) select.value = saved;
-
-      oldEl.parentNode.replaceChild(select, oldEl);
-    }
-  }
-}
-
-// Ensure this runs when the modal is opened
-settingsBtn.addEventListener("click", async () => {
-  await convertInputsToSelects();
-  settingsModal.classList.remove("hidden");
-});
-
-// Update save logic
-saveSettings.addEventListener("click", () => {
-  const deckName = document.getElementById("deck-name").value;
-  const noteType = document.getElementById("note-type").value;
-
-  localStorage.setItem("ankiDeck", deckName);
-  localStorage.setItem("ankiModel", noteType);
-  settingsModal.classList.add("hidden");
-});
 
 function clearFields() {
   document.querySelectorAll("input, textarea").forEach((el) => {
-    el.value = "";
+    if (el.id !== "deck-name" && el.id !== "note-type") el.value = "";
   });
 }
 
@@ -206,9 +231,6 @@ async function fetchSentenceData(word) {
     const data = await res.json();
     const filtered = (data.results || []).filter((item) => {
       if (item.text.length < 6) return false;
-      const particlePattern = new RegExp(`^${word}[はがをにへともで]`, "u");
-      if (particlePattern.test(item.text) && item.text.length < 10)
-        return false;
       return item.translations.flat().some((t) => t.lang === "eng");
     });
 
@@ -244,8 +266,8 @@ function showSentencePicker() {
 function generateAnkiFurigana(word, reading) {
   if (word === reading) return word;
   let furigana = "";
-  let wIdx = 0;
-  let rIdx = 0;
+  let wIdx = 0,
+    rIdx = 0;
   while (wIdx < word.length) {
     const char = word[wIdx];
     if (char.match(/[一-龠々]/)) {
@@ -272,15 +294,14 @@ function generateAnkiFurigana(word, reading) {
   return furigana.trim();
 }
 
-// --- Anki Integration ---
 async function addToAnki() {
-  const deckName = (localStorage.getItem("ankiDeck") || "").trim();
-  const modelName = (localStorage.getItem("ankiModel") || "").trim();
+  const deckEl = document.getElementById("deck-name");
+  const modelEl = document.getElementById("note-type");
+  const deckName = deckEl.value;
+  const modelName = modelEl.value;
 
   if (!deckName || !modelName) {
-    alert(
-      "カードを追加する前に、設定で「デッキ名」と「メモの種類」の両方を設定してください。",
-    );
+    alert("先に設定で「デッキ名」と「メモの種類」を選択してください。");
     return;
   }
 
@@ -324,7 +345,7 @@ async function addToAnki() {
       toggleLoading(false);
     }
   } catch (err) {
-    alert("Could not reach Anki. Is it open?");
+    alert("Ankiに接続できません。Ankiが起動しているか確認してください。");
     toggleLoading(false);
   }
 }
