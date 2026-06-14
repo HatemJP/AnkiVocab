@@ -28,17 +28,32 @@ document.addEventListener("keydown", (e) => {
 // Poll every 5 seconds to update UI state if Anki is closed/opened
 setInterval(async () => {
   if (!settingsModal.classList.contains("hidden")) {
-    const isConnected = await checkAnkiConnection();
-    if (!isConnected) {
-      saveSettings.disabled = true;
-      saveSettings.innerText = "Anki Disconnected";
-      saveSettings.classList.replace("bg-teal-600", "bg-gray-600");
-    } else if (saveSettings.disabled) {
-      // Re-enable if connection returns
-      refreshSettingsLists();
-    }
+    await updateConnectionUI();
   }
 }, 5000);
+
+async function updateConnectionUI() {
+  const isConnected = await checkAnkiConnection();
+  const saveBtn = document.getElementById("save-settings");
+
+  if (!isConnected) {
+    saveBtn.disabled = true;
+    saveBtn.innerText = "Anki Disconnected";
+    saveBtn.className =
+      "w-full py-3 rounded-xl bg-gray-600 cursor-not-allowed font-bold";
+    return false;
+  }
+
+  // If connected and button was disabled, restore and refresh lists
+  if (saveBtn.disabled) {
+    saveBtn.disabled = false;
+    saveBtn.innerText = "Save Settings";
+    saveBtn.className =
+      "w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-700 font-bold transition";
+    await refreshSettingsLists();
+  }
+  return true;
+}
 
 async function checkAnkiConnection() {
   const result = await fetchAnkiData("version", 1000);
@@ -47,7 +62,7 @@ async function checkAnkiConnection() {
 
 // --- Settings Logic ---
 settingsBtn.addEventListener("click", async () => {
-  await refreshSettingsLists();
+  await updateConnectionUI();
   settingsModal.classList.remove("hidden");
 });
 
@@ -64,7 +79,6 @@ settingsModal.addEventListener("click", (e) => {
 async function refreshSettingsLists() {
   const deckContainer = document.getElementById("deck-name").parentElement;
   const modelContainer = document.getElementById("note-type").parentElement;
-  const saveBtn = document.getElementById("save-settings");
 
   const deckSelect = await createFreshSelect(
     "deck-name",
@@ -79,17 +93,7 @@ async function refreshSettingsLists() {
     false,
   );
 
-  if (!deckSelect || !modelSelect) {
-    saveBtn.disabled = true;
-    saveBtn.innerText = "Anki Not Connected";
-    saveBtn.className =
-      "w-full py-3 rounded-xl bg-gray-600 cursor-not-allowed font-bold";
-  } else {
-    saveBtn.disabled = false;
-    saveBtn.innerText = "Save Settings";
-    saveBtn.className =
-      "w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-700 font-bold transition";
-
+  if (deckSelect && modelSelect) {
     deckContainer.replaceChild(
       deckSelect,
       document.getElementById("deck-name"),
@@ -152,7 +156,6 @@ function toggleLoading(show, text = "読み込み中...") {
   document.getElementById("main-container").classList.toggle("hidden", show);
 }
 
-// Optimized Fetch with Timeout
 async function fetchAnkiData(action, timeout = 2000) {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
@@ -295,10 +298,8 @@ function generateAnkiFurigana(word, reading) {
 }
 
 async function addToAnki() {
-  const deckEl = document.getElementById("deck-name");
-  const modelEl = document.getElementById("note-type");
-  const deckName = deckEl.value;
-  const modelName = modelEl.value;
+  const deckName = document.getElementById("deck-name")?.value;
+  const modelName = document.getElementById("note-type")?.value;
 
   if (!deckName || !modelName) {
     alert("先に設定で「デッキ名」と「メモの種類」を選択してください。");
@@ -337,15 +338,14 @@ async function addToAnki() {
     const result = await res.json();
     if (result.error) {
       alert(`Anki Error: ${result.error}`);
-      toggleLoading(false);
     } else {
       document.getElementById("loading-text").innerText = "成功！";
       await delay(1000);
       clearFields();
-      toggleLoading(false);
     }
   } catch (err) {
     alert("Ankiに接続できません。Ankiが起動しているか確認してください。");
+  } finally {
     toggleLoading(false);
   }
 }
