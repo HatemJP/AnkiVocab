@@ -19,8 +19,7 @@
             color: #ffffff !important;
             border-color: #333333 !important;
         }
-
-        /* Fixes autofill background without breaking cursor visibility */
+        
         input:-webkit-autofill,
         input:-webkit-autofill:hover,
         input:-webkit-autofill:focus,
@@ -43,7 +42,6 @@
             appearance: none;
         }
 
-        /* Ensure the dropdown arrow looks okay against the dark background */
         select {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CA3AF'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
             background-repeat: no-repeat;
@@ -52,7 +50,6 @@
             padding-right: 2.5rem;
         }
 
-        /* Force dark background and remove focus artifacts */
         select:focus,
         select:active {
             background-color: #1e1e1e !important;
@@ -61,7 +58,6 @@
             box-shadow: none !important;
         }
 
-        /* Ensure options in the dropdown are dark */
         select option {
             background-color: #1e1e1e;
             color: #ffffff;
