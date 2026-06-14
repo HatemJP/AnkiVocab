@@ -32,6 +32,51 @@
             -webkit-text-fill-color: #ffffff !important;
             transition: background-color 5000s ease-in-out 0s;
         }
+
+        input,
+        select,
+        textarea {
+            background-color: #1e1e1e !important;
+            color: #ffffff !important;
+            border-color: #333333 !important;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        /* Ensure the dropdown arrow looks okay against the dark background */
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CA3AF'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.25em;
+            padding-right: 2.5rem;
+        }
+
+        /* Force dark background and remove focus artifacts */
+        select:focus,
+        select:active,
+        input:focus,
+        textarea:focus {
+            background-color: #1e1e1e !important;
+            color: #ffffff !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Ensure options in the dropdown are dark */
+        select option {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #333;
+            border-radius: 10px;
+        }
     </style>
 </head>
 
@@ -57,7 +102,7 @@
             <div>
                 <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">単語 (Word)</label>
                 <div class="flex gap-2">
-                    <input type="text" id="field-tango" autocomplete="off" placeholder="単語を入力..."
+                    <input type="text" id="field-tango" autocomplete="off" placeholder="単語を入力..." tabindex="1"
                         class="flex-grow px-3 py-2 rounded-lg border focus:outline-none focus:ring-1 focus:ring-teal-500">
                     <button onclick="performSearch()"
                         class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg transition">
@@ -70,13 +115,13 @@
                 <div>
                     <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">読み方
                         (Reading)</label>
-                    <input type="text" id="field-yomikata"
+                    <input type="text" id="field-yomikata" autocomplete="off" tabindex="2"
                         class="w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-1 focus:ring-teal-500">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">振り仮名
                         (Furigana)</label>
-                    <input type="text" id="field-furigana"
+                    <input type="text" id="field-furigana" autocomplete="off" tabindex="3"
                         class="w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-1 focus:ring-teal-500">
                 </div>
             </div>
@@ -84,21 +129,30 @@
             <div>
                 <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">意味
                     (Meaning)</label>
-                <textarea id="field-imi" rows="2"
+                <textarea id="field-imi" autocomplete="off" tabindex="4" rows="2"
                     class="w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-1 focus:ring-teal-500"></textarea>
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">例文 (Example
                     Sentence)</label>
-                <textarea id="field-reibun" rows="2"
+                <textarea id="field-reibun" autocomplete="off" tabindex="5" rows="2"
                     class="w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-1 focus:ring-teal-500"></textarea>
+            </div>
+
+            <div id="sentence-modal"
+                class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+                <div class="w-full max-w-lg bg-[#1a1a1a] border border-[#333333] rounded-3xl p-6 shadow-2xl">
+                    <h2 class="text-teal-400 font-bold mb-4">例文を選択</h2>
+                    <div id="sentence-list" class="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                    </div>
+                </div>
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">翻訳
                     (Translation)</label>
-                <textarea id="field-honyaku" rows="2"
+                <textarea id="field-honyaku" autocomplete="off" tabindex="6" rows="2"
                     class="w-full px-3 py-2 rounded-lg border focus:outline-none focus:ring-1 focus:ring-teal-500"></textarea>
             </div>
 
