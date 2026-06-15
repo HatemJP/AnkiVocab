@@ -2,10 +2,16 @@
   "manifest_version": 3,
   "name": "Anki Vocab Tool",
   "version": "1.0",
-  "description": "Anki vocabulary tool that allows anyone to fetch all data about a single word and then adding it to Anki easily.",
+  "description": "Anki vocabulary tool that allows to fetch all data about a single word and then adding it to Anki easily.",
   "action": {
     "default_popup": "anki-vocab.html",
     "default_title": "Anki Vocab Add-on"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "ankivocabtool@yuuki.com",
+      "strict_min_version": "109.0"
+    }
   },
   "permissions": [
     "storage"
