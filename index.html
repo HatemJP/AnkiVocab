@@ -163,27 +163,27 @@
             class="w-full max-w-lg bg-[#1a1a1a] border border-[#333333] rounded-2xl shadow-2xl flex flex-col max-h-[80vh]">
 
             <div class="flex justify-between items-center p-6 border-b border-[#333333]">
-                <h2 class="text-xl font-bold text-teal-400">Settings</h2>
+                <h2 class="text-xl font-bold text-teal-400">設定</h2>
                 <button id="close-settings" class="text-gray-400 hover:text-white text-2xl">×</button>
             </div>
 
             <div class="flex border-b border-[#333333]">
                 <button id="btn-general" class="flex-1 py-3 text-sm font-bold border-b-2 border-teal-500 text-teal-400"
-                    onclick="switchTab('general')">General</button>
+                    onclick="switchTab('general')">カード</button>
                 <button id="btn-mapping"
                     class="flex-1 py-3 text-sm font-bold border-b-2 border-transparent text-gray-400 hover:text-white"
-                    onclick="switchTab('mapping')">Field Mapping</button>
+                    onclick="switchTab('mapping')">マッピング</button>
             </div>
 
             <div class="p-6 overflow-y-auto custom-scrollbar flex-1">
 
                 <div id="tab-general" class="space-y-4">
                     <div>
-                        <label class="block text-xs uppercase text-gray-400 mb-2">Deck Name</label>
+                        <label class="block text-xs uppercase text-gray-400 mb-2">デッキ名</label>
                         <input id="deck-name" type="text" class="w-full px-3 py-2 rounded-lg border bg-[#1e1e1e]">
                     </div>
                     <div>
-                        <label class="block text-xs uppercase text-gray-400 mb-2">Note Type</label>
+                        <label class="block text-xs uppercase text-gray-400 mb-2">ノートタイプ</label>
                         <input id="note-type" type="text" class="w-full px-3 py-2 rounded-lg border bg-[#1e1e1e]">
                     </div>
                 </div>
@@ -196,8 +196,7 @@
 
             <div class="p-6 border-t border-[#333333]">
                 <button id="save-settings"
-                    class="w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-700 font-bold transition">Save
-                    Settings</button>
+                    class="w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-700 font-bold transition">設定保存</button>
             </div>
         </div>
     </div>
