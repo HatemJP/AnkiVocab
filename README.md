@@ -8,4 +8,4 @@ However, in order for the extension and the tool itself to work the following co
 
 3. Correct Configuration: In order to make sure your configuration is being done correctly, click on the Settings gear icon in the popup where you can choose from any of the decks you have in your Anki as well as the note type you want to use for the current deck. Also, in the Field Mapping page in settings you are allowed to remove or add the fields as you want.
 
-Once all of those conditions are met, you can go ahead and visit the website where the tool is being used which is https://hatemjp.github.io/AnkiVocab/
+Once all of those conditions are met, you can go ahead and visit the website where the tool is being used which is https://timmyjp.github.io/AnkiVocab/
